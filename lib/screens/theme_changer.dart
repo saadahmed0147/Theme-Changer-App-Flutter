@@ -37,7 +37,7 @@ class _ThemeChangerState extends State<ThemeChanger> {
               builder: (context, value, child) {
                 return Expanded(
                   child: Container(
-                    color: Colors.black.withOpacity(value.value / 10),
+                    color: Colors.black.withOpacity((11 - value.value) / 10),
                   ),
                 );
               },
