@@ -10,25 +10,30 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  bool isSwitched = false;
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<ThemeChangerProvider>(context);
-    final sliderProvider = Provider.of<SliderProvider>(context);
+    print('object');
+    final provider = Provider.of<ThemeChangerProvider>(context, listen: false);
+    final sliderProvider = Provider.of<SliderProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         elevation: 10,
         centerTitle: true,
         title: const Text('Theme Changer'),
         actions: [
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Switch(
-                activeColor: Colors.black,
-                value: provider.themeMode == ThemeMode.dark,
-                onChanged: ((value) {
-                  provider.setTheme(value ? ThemeMode.dark : ThemeMode.light);
-                })),
+          Consumer<ThemeChangerProvider>(
+            builder: (context, value, child) {
+              return Padding(
+                padding: const EdgeInsets.all(10),
+                child: Switch(
+                    activeColor: Colors.black,
+                    value: provider.themeMode == ThemeMode.dark,
+                    onChanged: ((value) {
+                      provider
+                          .setTheme(value ? ThemeMode.dark : ThemeMode.light);
+                    })),
+              );
+            },
           )
         ],
       ),
@@ -36,37 +41,43 @@ class _HomeScreenState extends State<HomeScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          RadioMenuButton<ThemeMode>(
-              value: ThemeMode.light,
-              groupValue: provider.themeMode,
-              onChanged: (v) {
-                provider.setTheme(ThemeMode.light);
-              },
-              child: const Text('Light Mode')),
-          RadioMenuButton<ThemeMode>(
-            value: ThemeMode.dark,
-            groupValue: provider.themeMode,
-            onChanged: (v) {
-              provider.setTheme(ThemeMode.dark);
+          Consumer<ThemeChangerProvider>(
+            builder: (context, value, child) {
+              return Column(
+                children: [
+                  RadioMenuButton<ThemeMode>(
+                      value: ThemeMode.light,
+                      groupValue: provider.themeMode,
+                      onChanged: (v) {
+                        provider.setTheme(ThemeMode.light);
+                      },
+                      child: const Text('Light Mode')),
+                  RadioMenuButton<ThemeMode>(
+                    value: ThemeMode.dark,
+                    groupValue: provider.themeMode,
+                    onChanged: (v) {
+                      provider.setTheme(ThemeMode.dark);
+                    },
+                    child: const Text('Dark Mode'),
+                  ),
+                  Center(
+                    child: ToggleButtons(
+                        onPressed: (index) {
+                          provider.setTheme(
+                              index == 0 ? ThemeMode.dark : ThemeMode.light);
+                        },
+                        isSelected: [
+                          provider.themeMode == ThemeMode.dark,
+                          provider.themeMode == ThemeMode.light
+                        ],
+                        children: const [
+                          Text('On'),
+                          Text('Off')
+                        ]),
+                  ),
+                ],
+              );
             },
-            child: const Text('Dark Mode'),
-          ),
-          Expanded(
-            child: Center(
-              child: ToggleButtons(
-                  onPressed: (index) {
-                    provider.setTheme(
-                        index == 0 ? ThemeMode.dark : ThemeMode.light);
-                  },
-                  isSelected: [
-                    provider.themeMode == ThemeMode.dark,
-                    provider.themeMode == ThemeMode.light
-                  ],
-                  children: const [
-                    Text('On'),
-                    Text('Off')
-                  ]),
-            ),
           ),
           Consumer<SliderProvider>(
             builder: (context, value, child) {
